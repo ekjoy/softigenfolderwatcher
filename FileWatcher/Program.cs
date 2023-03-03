@@ -15,6 +15,7 @@ using Microsoft.Extensions.Options;
 
 ////Settings for WindowsService
 IHost host = Host.CreateDefaultBuilder(args)
+	.UseWindowsService()
 	.ConfigureLogging(options => {
 		if (OperatingSystem.IsWindows())
 		{
