@@ -9,7 +9,8 @@ namespace FileWatcher
     public class MyFileWatcher : IMyFileWatcher
     {
         private string _directoryName1 = Path.Join(Environment.CurrentDirectory, "files");//change this to whatever you want
-		 private Dictionary<int,string> _directories= new Dictionary<int,string>();
+		 //List of directories
+        private Dictionary<int,string> _directories= new Dictionary<int,string>();
 		private string _fileFilter = "*.*";
        
         ILogger<MyFileWatcher> _logger;
