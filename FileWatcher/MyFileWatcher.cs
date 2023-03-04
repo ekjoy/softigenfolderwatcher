@@ -8,43 +8,52 @@ namespace FileWatcher
 {
     public class MyFileWatcher : IMyFileWatcher
     {
-        private string _directoryName = Path.Join(Environment.CurrentDirectory, "files");//change this to whatever you want
-        private string _fileFilter = "*.*";
-        FileSystemWatcher _fileSystemWatcher;
+        private string _directoryName1 = Path.Join(Environment.CurrentDirectory, "files");//change this to whatever you want
+		 private Dictionary<int,string> _directories= new Dictionary<int,string>();
+		private string _fileFilter = "*.*";
+       
         ILogger<MyFileWatcher> _logger;
         IServiceProvider _serviceProvider;
 
         public MyFileWatcher(ILogger<MyFileWatcher> logger, IServiceProvider serviceProvider)
         {
             _logger = logger;
-            if(!Directory.Exists(_directoryName))
-                Directory.CreateDirectory(_directoryName);
-            _fileSystemWatcher = new FileSystemWatcher(_directoryName, _fileFilter);
+            if(!Directory.Exists(_directoryName1))
+                Directory.CreateDirectory(_directoryName1);
+           
             _serviceProvider = serviceProvider;
-        }
+			_directories.Add(0, "C:\\FileWatcher\\Input1");
+			_directories.Add(1, "C:\\FileWatcher\\Input2");
+		}
 
         public void Start()
         {
-            _fileSystemWatcher.NotifyFilter = NotifyFilters.Attributes
-                                 | NotifyFilters.CreationTime
-                                 | NotifyFilters.DirectoryName
-                                 | NotifyFilters.FileName
-                                 | NotifyFilters.LastAccess
-                                 | NotifyFilters.LastWrite
-                                 | NotifyFilters.Security
-                                 | NotifyFilters.Size;
+            
+            for (int i = 0; i < 2; i++)
+            {
+                var _fileSystemWatcherDynamic = new FileSystemWatcher(_directories[i], _fileFilter);
+				_fileSystemWatcherDynamic.NotifyFilter = NotifyFilters.Attributes
+								 | NotifyFilters.CreationTime
+								 | NotifyFilters.DirectoryName
+								 | NotifyFilters.FileName
+								 | NotifyFilters.LastAccess
+								 | NotifyFilters.LastWrite
+								 | NotifyFilters.Security
+								 | NotifyFilters.Size;
 
-            _fileSystemWatcher.Changed += _fileSystemWatcher_Changed;
-            _fileSystemWatcher.Created += _fileSystemWatcher_Created;
-            _fileSystemWatcher.Deleted += _fileSystemWatcher_Deleted;
-            _fileSystemWatcher.Renamed += _fileSystemWatcher_Renamed;
-            _fileSystemWatcher.Error += _fileSystemWatcher_Error;
+				_fileSystemWatcherDynamic.Changed += _fileSystemWatcher_Changed;
+				_fileSystemWatcherDynamic.Created += _fileSystemWatcher_Created;
+				_fileSystemWatcherDynamic.Deleted += _fileSystemWatcher_Deleted;
+				_fileSystemWatcherDynamic.Renamed += _fileSystemWatcher_Renamed;
+				_fileSystemWatcherDynamic.Error += _fileSystemWatcher_Error;
 
 
-            _fileSystemWatcher.EnableRaisingEvents = true;
-            _fileSystemWatcher.IncludeSubdirectories = true;
+				_fileSystemWatcherDynamic.EnableRaisingEvents = true;
+				_fileSystemWatcherDynamic.IncludeSubdirectories = false;
 
-            _logger.LogInformation($"File Watching has started for directory {_directoryName}");
+				_logger.LogInformation($"File Watching has started for directory {_directories[i]}");
+			}
+
         }
 
         private void _fileSystemWatcher_Error(object sender, ErrorEventArgs e)
@@ -64,6 +73,7 @@ namespace FileWatcher
 
         private void _fileSystemWatcher_Changed(object sender, FileSystemEventArgs e)
         {
+
         }
 
         private void _fileSystemWatcher_Created(object sender, FileSystemEventArgs e)
